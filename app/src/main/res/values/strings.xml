@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CosmicExplorer</string>
+    <string name="loading_universe">Loading universe...</string>
+    <string name="explore_more">Explore More</string>
+</resources>
