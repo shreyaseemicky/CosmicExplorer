@@ -13,33 +13,30 @@ import java.util.List;
 public class SkyOverlayView extends View {
 
     private SkyRenderer renderer;
-    private List<StarCatalog.Star> stars;
+    private List<StarCatalog.Star>         stars;
     private List<StarCatalog.Constellation> constellations;
 
-    // Orientation from sensors (smoothed)
-    private double azimuth  = 0;
-    private double altitude = 30;
+    // Smoothed orientation
+    private double smoothAz  = 0;
+    private double smoothAlt = 30;
+    private boolean firstReading = true; // ✅ snap on first reading
 
-    // Manual pan offset (drag)
+    // Manual pan
     private float panOffsetAz  = 0;
     private float panOffsetAlt = 0;
 
-    // FOV (pinch zoom)
+    // FOV
     private float fov = 60f;
     private static final float FOV_MIN = 15f;
     private static final float FOV_MAX = 120f;
 
     private String searchQuery = "";
 
-    // Gesture detectors
+    // Gesture
     private ScaleGestureDetector scaleDetector;
     private GestureDetector      gestureDetector;
 
-    // Last drag position
-    private float lastTouchX, lastTouchY;
-    private boolean isDragging = false;
-
-    // Star tap callback
+    // Star tap
     public interface OnStarTappedListener {
         void onStarTapped(StarCatalog.Star star, float screenX, float screenY);
     }
@@ -48,58 +45,49 @@ public class SkyOverlayView extends View {
     // Shooting stars
     private ShootingStarManager shootingStarManager;
 
-    // Low-pass filter state
-    private double smoothAz  = 0;
-    private double smoothAlt = 30;
-    private static final float SMOOTH_FACTOR = 0.12f; // lower = smoother
+    // ✅ Lower = smoother but slower to follow phone
+    private static final float SMOOTH_FACTOR = 0.15f;
 
     public SkyOverlayView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+        super(context, attrs); init(context);
     }
-
     public SkyOverlayView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
+        super(context, attrs, defStyleAttr); init(context);
     }
-
     public SkyOverlayView(Context context) {
-        super(context);
-        init(context);
+        super(context); init(context);
     }
 
     private void init(Context context) {
         setBackgroundColor(0x00000000);
-        renderer             = new SkyRenderer(context);
-        stars                = StarCatalog.getStars();
-        constellations       = StarCatalog.getConstellations();
-        shootingStarManager  = new ShootingStarManager();
+        renderer            = new SkyRenderer(context);
+        stars               = StarCatalog.getStars();
+        constellations      = StarCatalog.getConstellations();
+        shootingStarManager = new ShootingStarManager();
 
-        // ── Pinch to zoom ──────────────────────────────────
+        // Pinch to zoom
         scaleDetector = new ScaleGestureDetector(context,
                 new ScaleGestureDetector.SimpleOnScaleGestureListener() {
                     @Override
-                    public boolean onScale(ScaleGestureDetector detector) {
-                        fov /= detector.getScaleFactor();
+                    public boolean onScale(ScaleGestureDetector d) {
+                        fov /= d.getScaleFactor();
                         fov = Math.max(FOV_MIN, Math.min(FOV_MAX, fov));
                         invalidate();
                         return true;
                     }
                 });
 
-        // ── Drag to pan + tap to identify star ────────────
+        // Drag + tap
         gestureDetector = new GestureDetector(context,
                 new GestureDetector.SimpleOnGestureListener() {
-
                     @Override
                     public boolean onScroll(MotionEvent e1, MotionEvent e2,
-                                            float distanceX, float distanceY) {
-                        // Convert pixels → degrees based on current FOV
+                                            float dX, float dY) {
                         float degPerPx = fov / getWidth();
-                        panOffsetAz  += distanceX * degPerPx;
-                        panOffsetAlt += distanceY * degPerPx;
-                        // Clamp altitude offset
-                        panOffsetAlt = Math.max(-80f, Math.min(80f, panOffsetAlt));
+                        panOffsetAz  += dX * degPerPx;
+                        panOffsetAlt += dY * degPerPx;
+                        panOffsetAlt  = Math.max(-80f,
+                                Math.min(80f, panOffsetAlt));
                         invalidate();
                         return true;
                     }
@@ -112,20 +100,19 @@ public class SkyOverlayView extends View {
                 });
     }
 
-    // ── Handle star tap ────────────────────────────────────
     private void handleStarTap(float tapX, float tapY) {
         if (starTappedListener == null) return;
 
-        double effectiveAz  = smoothAz  + panOffsetAz;
-        double effectiveAlt = smoothAlt - panOffsetAlt;
+        double effAz  = smoothAz  + panOffsetAz;
+        double effAlt = smoothAlt - panOffsetAlt;
 
         StarCatalog.Star closest = null;
-        float closestDist = 60f; // tap radius in pixels
+        float closestDist = 80f; // px tap radius
 
         for (StarCatalog.Star star : stars) {
             float[] pos = AstroMath.project(
                     star.ra, star.dec,
-                    effectiveAz, effectiveAlt,
+                    effAz, effAlt,
                     getWidth(), getHeight(), fov);
             if (pos == null) continue;
             float dist = (float) Math.hypot(tapX - pos[0], tapY - pos[1]);
@@ -138,7 +125,7 @@ public class SkyOverlayView extends View {
         if (closest != null) {
             float[] pos = AstroMath.project(
                     closest.ra, closest.dec,
-                    effectiveAz, effectiveAlt,
+                    effAz, effAlt,
                     getWidth(), getHeight(), fov);
             if (pos != null)
                 starTappedListener.onStarTapped(closest, pos[0], pos[1]);
@@ -152,58 +139,64 @@ public class SkyOverlayView extends View {
         return true;
     }
 
-    // ── Called every frame for shooting stars ─────────────
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        double effectiveAz  = smoothAz  + panOffsetAz;
-        double effectiveAlt = smoothAlt - panOffsetAlt;
+        double effAz  = smoothAz  + panOffsetAz;
+        double effAlt = smoothAlt - panOffsetAlt;
 
         renderer.render(
                 canvas, stars, constellations,
-                effectiveAz, effectiveAlt,
+                effAz, effAlt,
                 getWidth(), getHeight(),
                 fov, searchQuery,
-                shootingStarManager
-        );
+                shootingStarManager);
 
-        // Keep animating for shooting stars + twinkling
-        postInvalidateDelayed(40); // ~25fps
+        postInvalidateDelayed(40);
     }
 
-    // ── Smooth sensor update ───────────────────────────────
+    // ✅ Fixed smooth update — snaps on first reading
     public void updateOrientation(double rawAz, double rawAlt) {
-        // Low-pass filter — smooth out sensor jitter
-        smoothAz  = smoothAz  + SMOOTH_FACTOR * (rawAz  - smoothAz);
-        smoothAlt = smoothAlt + SMOOTH_FACTOR * (rawAlt - smoothAlt);
-        this.azimuth  = rawAz;
-        this.altitude = rawAlt;
+        if (firstReading) {
+            // ✅ Snap immediately to real sensor value
+            smoothAz  = rawAz;
+            smoothAlt = rawAlt;
+            firstReading = false;
+        } else {
+            // ✅ Handle azimuth wrap-around (359° → 0°)
+            double diff = rawAz - smoothAz;
+            if (diff >  180) diff -= 360;
+            if (diff < -180) diff += 360;
+            smoothAz  = smoothAz + SMOOTH_FACTOR * diff;
+            smoothAlt = smoothAlt + SMOOTH_FACTOR * (rawAlt - smoothAlt);
+        }
+
+        // Normalize azimuth
+        if (smoothAz < 0)   smoothAz += 360;
+        if (smoothAz >= 360) smoothAz -= 360;
     }
 
     public void setNightMode(boolean on) {
         renderer.setNightMode(on);
     }
-
     public void setSearchQuery(String query) {
         this.searchQuery = query;
     }
-
     public void setTourHighlights(List<String> starNames) {
         renderer.setHighlightedStars(starNames);
     }
-
     public void clearTourHighlights() {
         renderer.setHighlightedStars(null);
     }
-
     public void setSkyCulture(SkyCulture.Culture culture) {
         renderer.setSkyCulture(culture);
     }
-
     public void setOnStarTappedListener(OnStarTappedListener l) {
         this.starTappedListener = l;
     }
-
     public float getFov() { return fov; }
+
+    // ✅ Expose smoothed values for compass display
+    public double getSmoothedAzimuth()  { return smoothAz; }
+    public double getSmoothedAltitude() { return smoothAlt; }
 }

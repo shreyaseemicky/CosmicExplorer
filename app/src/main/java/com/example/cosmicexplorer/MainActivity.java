@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     boolean     nightMode = false;
     MediaPlayer mediaPlayer;
 
-    // ──────────────────────────────────────────────────────
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,23 +103,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             skyOverlay.setNightMode(nightMode);
             mainContent.setBackgroundColor(
                     nightMode ? 0xFF0A0000 : 0xFF000010);
+            nightModeBtn.setImageResource(nightMode
+                    ? android.R.drawable.ic_menu_day
+                    : android.R.drawable.ic_menu_camera);
             Toast.makeText(this,
-                    nightMode ? "🔴 Night Mode ON" : "Night Mode OFF",
+                    nightMode
+                            ? "🔴 Night Mode ON — preserves dark adaptation"
+                            : "☀️ Night Mode OFF",
                     Toast.LENGTH_SHORT).show();
         });
 
         // ── Search ─────────────────────────────────────────
         searchBar.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(
-                    CharSequence s, int i, int c, int a) {}
-            @Override public void onTextChanged(
-                    CharSequence s, int i, int b, int c) {
+            @Override
+            public void beforeTextChanged(CharSequence s, int i, int c, int a) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int i, int b, int c) {
                 skyOverlay.setSearchQuery(s.toString());
-                // Hide card when searching
-                if (starInfoCard.getVisibility() == View.VISIBLE)
+                if (starInfoCard.getVisibility() == View.VISIBLE) {
                     hideStarCard();
+                }
             }
-            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
 
         // ── Exit ───────────────────────────────────────────
@@ -136,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         cardStarName.setText(star.name);
         cardStarType.setText(star.isPlanet ? "🪐  PLANET" : "✦  STAR");
-
         cardMagnitude.setText(String.format("%.2f", star.magnitude));
 
         if (info != null) {
@@ -152,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         starInfoCard.setVisibility(View.VISIBLE);
-        // Slide up animation
         starInfoCard.setTranslationY(500f);
         starInfoCard.animate()
                 .translationY(0f)
@@ -194,10 +199,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             drawerContent.addView(item);
         }
 
-        // Tours header
+        // Tours section header
         View tourHeader = LayoutInflater.from(this)
-                .inflate(R.layout.drawer_section_header,
-                        drawerContent, false);
+                .inflate(R.layout.drawer_section_header, drawerContent, false);
         ((TextView) tourHeader).setText("  🔭  TOURS");
         drawerContent.addView(tourHeader);
 
@@ -226,13 +230,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // ──────────────────────────────────────────────────────
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             gravity = event.values;
-        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+        }
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             geomagnetic = event.values;
+        }
 
         if (gravity != null && geomagnetic != null) {
-            float[] R = new float[9], I = new float[9];
+            float[] R = new float[9];
+            float[] I = new float[9];
+
             if (SensorManager.getRotationMatrix(R, I, gravity, geomagnetic)) {
                 float[] orientation = new float[3];
                 SensorManager.getOrientation(R, orientation);
@@ -241,14 +249,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 double alt = -Math.toDegrees(orientation[1]);
                 if (az < 0) az += 360;
 
-                // Update sky overlay with smooth sensor data
+                // Send raw values — SkyOverlayView smooths internally
                 skyOverlay.updateOrientation(az, alt);
 
-                // Update compass text
+                // Read back smoothed values for compass display
+                double dispAz  = skyOverlay.getSmoothedAzimuth();
+                double dispAlt = skyOverlay.getSmoothedAltitude();
+
                 compassText.setText(
-                        getDirection(az) + "  "
-                                + (int) az + "°  ↕"
-                                + (int) alt + "°");
+                        getDirection(dispAz) + "  "
+                                + (int) dispAz + "°  ↕"
+                                + (int) dispAlt + "°");
             }
         }
     }
@@ -264,17 +275,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return "NW";
     }
 
-    @Override public void onAccuracyChanged(Sensor s, int a) {}
+    @Override
+    public void onAccuracyChanged(Sensor s, int a) {}
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (accelerometer != null)
+        if (accelerometer != null) {
             sensorManager.registerListener(this, accelerometer,
                     SensorManager.SENSOR_DELAY_GAME);
-        if (magnetometer != null)
+        }
+        if (magnetometer != null) {
             sensorManager.registerListener(this, magnetometer,
                     SensorManager.SENSOR_DELAY_GAME);
+        }
     }
 
     @Override
