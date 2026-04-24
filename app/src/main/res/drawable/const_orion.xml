@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="400dp"
+    android:viewportWidth="300"
+    android:viewportHeight="400"
+    android:alpha="0.18">
+
+    <!-- Body torso -->
+    <path
+        android:pathData="M150,180 L150,280 M130,200 L170,200 M150,280 L120,360 M150,280 L180,360"
+        android:strokeColor="#8899BBCC"
+        android:strokeWidth="8"
+        android:fillColor="@android:color/transparent"/>
+    <!-- Head -->
+    <path
+        android:pathData="M150,180 A30,35 0 1,1 150,110 A30,35 0 1,1 150,180"
+        android:strokeColor="#8899BBCC"
+        android:strokeWidth="6"
+        android:fillColor="#11334455"/>
+    <!-- Belt -->
+    <path
+        android:pathData="M120,230 L180,230"
+        android:strokeColor="#AACCDDEE"
+        android:strokeWidth="5"
+        android:fillColor="@android:color/transparent"/>
+    <!-- Club arm -->
+    <path
+        android:pathData="M130,200 L80,160 L60,120"
+        android:strokeColor="#8899BBCC"
+        android:strokeWidth="7"
+        android:fillColor="@android:color/transparent"/>
+    <!-- Shield arm -->
+    <path
+        android:pathData="M170,200 L220,170 L240,140 L220,120 L200,140"
+        android:strokeColor="#8899BBCC"
+        android:strokeWidth="6"
+        android:fillColor="#11334455"/>
+</vector>

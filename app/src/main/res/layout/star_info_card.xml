@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/starInfoCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:orientation="vertical"
+    android:background="@drawable/card_bg"
+    android:padding="20dp"
+    android:elevation="12dp"
+    android:visibility="gone">
+
+    <!-- Drag handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="12dp"
+        android:background="#44AADDFF"/>
+
+    <!-- Star name + type row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/cardStarName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/cardStarType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#88AADDFF"
+            android:textSize="13sp"
+            android:background="#22AADDFF"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"/>
+    </LinearLayout>
+
+    <!-- Constellation -->
+    <TextView
+        android:id="@+id/cardConstellation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#88AADDFF"
+        android:textSize="13sp"
+        android:layout_marginTop="4dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#22AADDFF"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Stats row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Magnitude -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MAGNITUDE"
+                android:textColor="#66AADDFF"
+                android:textSize="10sp"
+                android:letterSpacing="0.1"/>
+
+            <TextView
+                android:id="@+id/cardMagnitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <!-- Distance -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DISTANCE"
+                android:textColor="#66AADDFF"
+                android:textSize="10sp"
+                android:letterSpacing="0.1"/>
+
+            <TextView
+                android:id="@+id/cardDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <!-- Color -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="COLOR"
+                android:textColor="#66AADDFF"
+                android:textSize="10sp"
+                android:letterSpacing="0.1"/>
+
+            <TextView
+                android:id="@+id/cardColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Mythology blurb -->
+    <TextView
+        android:id="@+id/cardMythology"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#88CCDDEE"
+        android:textSize="13sp"
+        android:lineSpacingMultiplier="1.5"
+        android:layout_marginTop="14dp"/>
+
+    <!-- Close -->
+    <TextView
+        android:id="@+id/cardClose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TAP ANYWHERE TO DISMISS"
+        android:textColor="#44AADDFF"
+        android:textSize="11sp"
+        android:gravity="center"
+        android:letterSpacing="0.1"
+        android:layout_marginTop="12dp"/>
+
+</LinearLayout>

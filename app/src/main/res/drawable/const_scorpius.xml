@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="400dp"
+    android:viewportWidth="300"
+    android:viewportHeight="400"
+    android:alpha="0.18">
+    <!-- Body -->
+    <path
+        android:pathData="M150,100 L150,200 L130,250 L110,300 L100,350 L120,370 L140,350"
+        android:strokeColor="#8899BBCC"
+        android:strokeWidth="8"
+        android:fillColor="@android:color/transparent"/>
+    <!-- Claws -->
+    <path
+        android:pathData="M150,150 L100,120 L70,100 M150,150 L200,120 L230,100"
+        android:strokeColor="#8899BBCC"
+        android:strokeWidth="6"
+        android:fillColor="@android:color/transparent"/>
+    <!-- Legs -->
+    <path
+        android:pathData="M130,200 L90,220 M130,220 L90,240 M170,200 L210,220 M170,220 L210,240"
+        android:strokeColor="#7788AABB"
+        android:strokeWidth="4"
+        android:fillColor="@android:color/transparent"/>
+</vector>
