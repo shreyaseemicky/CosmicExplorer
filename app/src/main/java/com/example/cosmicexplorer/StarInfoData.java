@@ -83,6 +83,59 @@ public class StarInfoData {
                 "The smallest planet and fastest orbiter — one Mercury year is just 88 Earth days. Has no atmosphere and extreme temperature swings.");
         mercury.isPlanet = true;
         data.put("Mercury", mercury);
+
+        // Deep Sky Objects
+        data.put("Andromeda Galaxy", new Info("Local Group", "2.537M ly",
+                "Spiral Galaxy",
+                "The largest galaxy in the Local Group. On a collision course with the Milky Way — they will merge in about 4.5 billion years."));
+
+        data.put("Orion Nebula", new Info("Orion", "1,344 ly",
+                "Emission Nebula",
+                "The nearest stellar nursery. The four young stars at its center (the Trapezium) are only 300,000 years old — newborns by cosmic standards."));
+
+        data.put("Pleiades", new Info("Taurus", "444 ly",
+                "Open Cluster",
+                "The Seven Sisters. Although called seven, most people see only six. The seventh, Merope, is shrouded in nebulosity."));
+
+        data.put("Crab Nebula", new Info("Taurus", "6,500 ly",
+                "Supernova Remnant",
+                "The first object in Messier's famous catalog. Chinese astronomers in 1054 AD recorded the explosion as a star visible in daylight for 23 days."));
+
+        data.put("Omega Centauri", new Info("Centaurus", "17,090 ly",
+                "Globular Cluster",
+                "So massive it may be the stripped core of a dwarf galaxy swallowed by the Milky Way. It has its own black hole at the center."));
+
+        data.put("Large Magellanic Cloud", new Info("Dorado/Mensa", "160,000 ly",
+                "Irregular Galaxy",
+                "Contains the Tarantula Nebula — the most active star-forming region in our galactic neighborhood."));
+
+        data.put("Lagoon Nebula", new Info("Sagittarius", "4,100 ly",
+                "Emission Nebula",
+                "The pink color comes from hydrogen gas excited by ultraviolet radiation from young stars embedded within."));
+
+        data.put("Jewel Box", new Info("Crux", "6,440 ly",
+                "Open Cluster",
+                "Named by John Herschel for its jewel-like colors. Contains blue-white supergiants and one contrasting red supergiant."));
+
+        data.put("Hercules Cluster", new Info("Hercules", "22,200 ly",
+                "Globular Cluster",
+                "In 1974 the Arecibo telescope beamed a radio message toward this cluster — Earth's first deliberate attempt at interstellar communication."));
+
+        data.put("Helix Nebula", new Info("Aquarius", "650 ly",
+                "Planetary Nebula",
+                "Nicknamed the Eye of God. The central white dwarf is the remnant of a star similar to our Sun."));
+
+        data.put("Eagle Nebula", new Info("Serpens", "7,000 ly",
+                "Emission Nebula",
+                "The Pillars of Creation within this nebula are columns of hydrogen gas 4–5 light-years tall, slowly being eroded by radiation from newborn stars."));
+
+        data.put("Cigar Galaxy", new Info("Ursa Major", "12M ly",
+                "Starburst Galaxy",
+                "Forming stars 10x faster than normal galaxies. The red hydrogen filaments erupting from its center are driven by supernova-powered winds."));
+
+        data.put("Centaurus A", new Info("Centaurus", "13M ly",
+                "Radio Galaxy",
+                "Shoots twin jets of plasma from a supermassive black hole 55 million times the mass of the Sun."));
     }
 
     public static Info get(String starName) {

@@ -25,6 +25,8 @@ public class SkyRenderer {
     private Paint clockPaint     = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint milkyWayPaint  = new Paint(Paint.ANTI_ALIAS_FLAG);
 
+    private DeepSkyRenderer dsoRenderer;
+
     private boolean    nightMode = false;
     private List<String> highlightedStars = null;
     private SkyCulture.Culture currentCulture =
@@ -73,13 +75,18 @@ public class SkyRenderer {
         milkyWayPaint.setStyle(Paint.Style.FILL);
         milkyWayPaint.setAntiAlias(true);
 
+        dsoRenderer = new DeepSkyRenderer();
+
         // Init twinkle phases for up to 50 named stars
         twinklePhase = new float[50];
         for (int i = 0; i < twinklePhase.length; i++)
             twinklePhase[i] = twinkleRng.nextFloat() * 6.28f;
     }
 
-    public void setNightMode(boolean on)                  { this.nightMode = on; }
+    public void setNightMode(boolean on) {
+        this.nightMode = on;
+        dsoRenderer.setNightMode(on);
+    }
     public void setHighlightedStars(List<String> names)   { this.highlightedStars = names; }
     public void setSkyCulture(SkyCulture.Culture culture) {
         this.currentCulture = culture;
@@ -100,6 +107,11 @@ public class SkyRenderer {
 
         // ── 2. Milky Way band ──────────────────────────────
         drawMilkyWay(canvas, w, h, azimuth, altitude);
+
+        // ── 2b. Deep sky objects ───────────────────────────
+        dsoRenderer.render(canvas,
+                DeepSkyObject.getCatalog(),
+                azimuth, altitude, w, h, fov);
 
         // ── 3. Night mode tint ─────────────────────────────
         if (nightMode) canvas.drawRect(0, 0, w, h, nightPaint);

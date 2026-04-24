@@ -106,8 +106,9 @@ public class SkyOverlayView extends View {
         double effAz  = smoothAz  + panOffsetAz;
         double effAlt = smoothAlt - panOffsetAlt;
 
-        StarCatalog.Star closest = null;
-        float closestDist = 80f; // px tap radius
+        // Check named stars first
+        StarCatalog.Star closestStar = null;
+        float closestDist = 80f;
 
         for (StarCatalog.Star star : stars) {
             float[] pos = AstroMath.project(
@@ -118,17 +119,38 @@ public class SkyOverlayView extends View {
             float dist = (float) Math.hypot(tapX - pos[0], tapY - pos[1]);
             if (dist < closestDist) {
                 closestDist = dist;
-                closest = star;
+                closestStar = star;
             }
         }
 
-        if (closest != null) {
+        // Check DSOs — larger tap radius
+        for (DeepSkyObject dso : DeepSkyObject.getCatalog()) {
             float[] pos = AstroMath.project(
-                    closest.ra, closest.dec,
+                    dso.ra, dso.dec,
+                    effAz, effAlt,
+                    getWidth(), getHeight(), fov);
+            if (pos == null) continue;
+            float screenR = (dso.angularSize / fov) * getWidth() * 0.6f;
+            screenR = Math.max(30f, screenR);
+            float dist = (float) Math.hypot(tapX - pos[0], tapY - pos[1]);
+            if (dist < screenR && dist < closestDist) {
+                // Convert DSO to a fake Star for the card
+                StarCatalog.Star fakeStar = new StarCatalog.Star(
+                        dso.name, dso.ra, dso.dec,
+                        dso.magnitude, false, dso.coreColor);
+                closestDist = dist;
+                closestStar = fakeStar;
+            }
+        }
+
+        if (closestStar != null) {
+            final StarCatalog.Star result = closestStar;
+            float[] pos = AstroMath.project(
+                    result.ra, result.dec,
                     effAz, effAlt,
                     getWidth(), getHeight(), fov);
             if (pos != null)
-                starTappedListener.onStarTapped(closest, pos[0], pos[1]);
+                starTappedListener.onStarTapped(result, pos[0], pos[1]);
         }
     }
 
